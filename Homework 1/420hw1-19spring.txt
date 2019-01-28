@@ -1,0 +1,110 @@
+(Print this page as a cover sheet for your printouts)
+
+CSCE 420 HOMEWORK 1
+Dr. Daugherity
+Due: 11:59 P.M. Thursday, January 31, 2019
+
+"On my honor, as an Aggie, I have neither given nor received any unauthorized 
+aid on any portion of the academic work included in this assignment."
+
+
+________________________________	________________________________
+Typed or printed name of student	           Signature of student
+
+NOTE:  Please follow the instructions below for submitting your 
+assignment through CSNET.  ONLY ASSIGNMENTS SUBMITTED TO CSNET WILL BE GRADED!
+Make a printout of each source file and staple it behind this cover sheet.
+Sign it and turn it in in class Friday, February 1st.  IF YOU DO NOT TURN IN A 
+SIGNED COVER SHEET YOUR WORK WILL NOT BE GRADED!
+
+NOTE:  Homework will be graded on compute.cse.tamu.edu, using g++8.2.0 with 
+-std=c++2a, or javac and java, or python3.6 (not python or python2 or 
+python3).
+
+You are free to develop your programs on any other platform, but it is your 
+responsibility to make sure your programs also compile and execute correctly on
+compute.cse.tamu.edu as specified.
+
+NOTE:  Each file submitted (hw1pr1.cpp, etc.--see below) must begin as follows:
+//Your name
+//Your UIN
+//CSCE 420
+//Due: January 31, 2019
+//hw1pr1.cpp (or whatever this file name is)
+
+NOTE:  Also write a README.txt file with whatever information is needed to
+compile and run your programs.  Zip the README.txt and the homework files into
+a single file named hw1.zip and submit to CSNET.
+
+The grade for this lab will be based on style (formatting, variable names, 
+comments, etc.), syntax (no compilation or link errors), and correctness 
+(passes all test cases).  Your grade for this lab is:
+Problem #	 1       2       3       4 
+Style             /2      /4      /4      /2 
+Syntax            /3      /6      /6      /3 
+Correctness       /5      /10     /10     /5
+-------------------------------------------------------------------
+Total             /10     /20     /20     /10
+Grand total _____/50
+
+1. (10 points) Write a program named hw1pr1.cpp or Hw1Pr1.java or hw1pr1.py 
+which uses breadth-first search to find the smallest number of flips required
+to sort a stack of pancakes (see https://en.wikipedia.org/wiki/Pancake_sorting).
+Use the pseudocode in Figure 3.11.
+
+The input (from the keyboard or from UNIX file redirection) will be a list of
+numbers, one per line, where the first number is how many pancakes (call it n)
+and the remaining numbers are the pancake diameters (1 through n) from top to 
+bottom.  For example, the top stack pictured in the Wikipedia article would be 
+entered as
+6
+2
+1
+4
+6
+3
+5
+and the output will be a list of moves (number of top pancakes flipped) and the
+new state of the stack.  If the best move is the one pictured in the Wikipedia
+article, the output will be
+
+flip top 3, giving 4 1 2 6 3 5
+
+and so on, with the last flip giving 1 2 3 4 5 6.
+
+Also print the number of child nodes generated, i.e., the number of times the
+CHILD-NODE function is called.
+
+2. (20 points) Modify problem 1 to use iterative-deepening depth-first search, 
+using the pseudocode in Figure 3.18 (which calls the pseudocode in Figure 3.17).
+Also print the number of child nodes generated.  Name your program hw1pr2.cpp 
+or Hw1Pr2.java or hw1pr2.py.
+
+3. (20 points) Modify problem 1 to use A* search with the "number-of-reversals
+sortedness" heuristic, which estimates the number of flips remaining and is
+conceptually defined as follows: 
+
+Make a list of 0 followed by the stack, e.g., 0 2 1 4 6 3 5, and insert < or >
+signs, e.g., 0 < 2 > 1 < 4 < 6 > 3 < 5, then start at the left and count the 
+number of times < changes to > or vice versa.  In this example there are 4 
+reversals.  (Can you prove this never overestimates the number of flips
+remaining?)
+
+Use the A* algorithm described in section 3.5.2; also print the number of child
+nodes generated.  Name your program Hw1Pr3.java or hw1pr3.cpp or hw1pr3.py.
+
+OPTIONAL EXTRA CREDIT
+=====================
+4. (10 points)  Call the heuristic in problem 3 h1 and find a better A* 
+heuristic h2.  Write a program Hw1Pr4.java or hw1pr4.cpp or hw1pr4.py which
+reads a pancake stack height n and calculates the shortfall (true number of 
+flips remaining minus the heuristic) minimum, maximum, and average, over all 
+permutations of n panckes, for h1 and h2.  A sample run should look have this
+format:
+
+Number of pancakes? 9
+362880 permutations
+h1 shortfall:	min=x	max=x	average=x.xx
+h2 shortfall:	min=x	max=x	average=x.xx
+
+Be sure your new heuristic never overestimates.
