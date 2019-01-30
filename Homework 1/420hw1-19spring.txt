@@ -58,6 +58,7 @@ and the remaining numbers are the pancake diameters (1 through n) from top to
 bottom.  For example, the top stack pictured in the Wikipedia article would be 
 entered as
 6
+
 2
 1
 4

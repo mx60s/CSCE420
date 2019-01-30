@@ -1,44 +1,69 @@
+# Maggie von Ebers
+# 525001114
+# CSCE 420
+# Due: 1/31/2019
+# h1pr1.py
+
+from collections import deque, namedtuple
+import time
+
+Node = namedtuple('Node', ['parent', 'action', 'state', 'path'])
+
+
 class Problem:
-    def __init__(self, initial_state, path_cost):
-        self.state = initial_state
-        self.path_cost = path_cost
+    # __slots__ = ['inital_state']
+    def __init__(self, initial_state):
+        self.initial_state = initial_state
+
+    def result(self, state, action):
+        if action == len(self.initial_state):
+            return state[::-1]
+        state = list(state)
+        state[:action] = state[:action][::-1]
+        return state
+
+def goal_test(l):
+    equal = True
+    for x,y in zip(l,sorted(l)):
+        if x != y:
+            equal = False
+    return equal
+
+
+def breadth_first(p: Problem):
+
+    n = Node(None, 0, p.initial_state, [0])
+
+    if goal_test(tuple(n.state)):
+        return n.path 
     
-    def goal_test(self, node):
-        return true
+    frontier = deque()
+    frontier.append(n)
 
-    def actions(self,node_state):
-        return []
-
-class Node:
-    def __init__(self, state):
-        self.state = state
-
-class ChildNode:
-    def __init__(self, problem, node, action):
-        self.problem = problem
-        self.node = node
-        self.action = action
-        self.state = node.state
-
-
-def breadth_first(p):
-    node = p.initial_state()
-    if node.goal_test():
-        # return solution(node)
-    frontier = []   # queue
-    frontier.append(node)
-    explored = set()
-    while True:
-        if len(frontier) == 0:
-            # return failure
+    explored = set([])
+    
+    while frontier:
         node = frontier.popleft()
-        explored.append(node)
-        for action in p.actions(node.state):
-            child = ChildNode(p, node, action)
-            if frontier.count(child) == 0 & explored.count(child) == 0:
-                if p.goal_test(child.state):
-                    # return solution
+
+        if goal_test(tuple(node.state)):
+            return node.path
+
+        for action in range(2, len(p.initial_state)+1):
+
+            child = Node(node, action, p.result(node.state, action), 
+                        tuple(node.path) + (action,))
+
+            if tuple(child.state) in explored:
+                continue
+
+            if child not in frontier:
                 frontier.append(child)
+
+                if goal_test(tuple(child.state)):
+                    return child.path
+                    
+        explored.add(tuple(node.state))
+    return []
 
 
 
@@ -47,8 +72,13 @@ a = []
 for i in range(num):
     a.append(int(input()))
 
-p = Problem(a,0)
+# a = list('214635')
+p = Problem(a)
+print(len(p.initial_state))
 b = breadth_first(p)
 
+print("Result:")
+s = ""
 for result in b:
-    print(result)
+    s = s + " " + str(result)
+print(s)
