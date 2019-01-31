@@ -4,7 +4,7 @@
 # Due: 1/31/2019
 # h1pr2.py
 
-from collections import deque, namedtuple
+from collections import namedtuple
 
 Node = namedtuple('Node', ['parent', 'action', 'state', 'path'])
 
