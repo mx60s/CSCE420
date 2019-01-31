@@ -4,15 +4,26 @@
 # Due: 1/31/2019
 # h1pr3.py
 
-from collections import deque, namedtuple
+from collections import deque
 
-Node = namedtuple('Node', ['parent', 'action', 'state', 'path', 'f_score', 'g_score'])
+
+class Node:
+    __slots__ = ['parent', 'action', 'state', 'path', 'f_score']
+
+    def __init__(self, parent, action, state, path, f_score):
+        self.parent = parent
+        self.action = action
+        self.state = state
+        self.path = path
+        self.f_score = f_score
 
 
 class Problem:
-    # __slots__ = ['inital_state']
+    __slots__ = ['initial_state', 'children']
+
     def __init__(self, initial_state):
         self.initial_state = initial_state
+        self.children = 0
 
     def result(self, state, action):
         if action == len(self.initial_state):
@@ -20,13 +31,13 @@ class Problem:
         state = list(state)
         state[:action] = state[:action][::-1]
         return state
-    
-    def path_cost(self, state) -> int:
+
+    def path_cost_estimate(self, state) -> int:
         state = [0] + state
         h = 0
         less = True
         last = True
-        for i in range(1,len(state)):
+        for i in range(1, len(state)):
             if state[i-1] < state[i]:
                 less = True
             else:
@@ -43,51 +54,71 @@ class Problem:
                 min = n
         return min
 
-    def dist_between(self,node1: Node, node2: Node) -> int:
-        return abs(self.path_cost(node1.state) - self.path_cost(node2.state))
+    def dist_between(self, node1: Node, node2: Node) -> int:
+        return abs(self.path_cost_estimate(node1.state) - self.path_cost_estimate(node2.state))
+
+    def neighbors(self, node: Node):
+        neighbors = []
+        for action in range(2, len(self.initial_state)+1):
+            n = Node(node, action, self.result(
+                node.state, action), node.path + [action], 0)
+            neighbors.append(n)
+            self.children += 1
+        return neighbors
 
 
-def goal_test(l):
+def goal_test(node):
     equal = True
-    for x,y in zip(l,sorted(l)):
+    for x, y in zip(node.state, sorted(node.state)):
         if x != y:
             equal = False
     return equal
 
+
 def a_star(p: Problem):
-    n = Node(None,0,p.initial_state,[0], p.path_cost(p.initial_state),0)
+    n = Node(None, 0, p.initial_state, [0],
+             p.path_cost_estimate(p.initial_state))
 
     explored = set([])
     frontier = deque()
     frontier.append(n)
-    # g_score = dict()
-    # g_score[n] = 0
+    g_score = dict()
+    g_score[n] = 0
 
-    # f_score = dict()
-    # f_score[n] = p.path_cost(n.state)
+    f_score = dict()
+    f_score[n] = p.path_cost_estimate(n.state)
 
     while frontier:
         current = p.find_lowest(frontier)
         if goal_test(current):
             return current.path
-        
-        frontier.remove(current)
-        explored.add(tuple(current.state))
 
-        for action in range(2,len(p.initial_state) + 1):
-            child = Node(current, action, p.result(current.state,action),
-                    tuple(current.path) + (action,),
-                    p.path_cost(p.result(current.state,action)),
-                    current.g_score + p.path_cost(p.result(current.state,action)))
-            if tuple(child.state) in explored:
+        frontier.remove(current)
+        explored.add(current)
+
+        for child in p.neighbors(current):
+            if child in explored:
                 continue
-            
-            g_score = child.g_score + p.dist_between(current,child)
+
+            temp_g_score = g_score[current] + p.dist_between(current, child)
 
             if child not in frontier:
                 frontier.append(child)
-            else if g_score >= child.g_score:
+            elif temp_g_score >= g_score[child]:
                 continue
-            
-            child.g_score = g_score
-            child.f_score
+
+            g_score[child] = temp_g_score
+            f_score[child] = g_score[child] + p.path_cost_estimate(child.state)
+
+
+num = int(input())
+a = []
+for i in range(num):
+    a.append(int(input()))
+
+# a = [2, 1, 4, 6, 3, 5]
+p = Problem(a)
+
+star = a_star(p)
+print("Result:", *star)
+print("Children generated:", p.children)

@@ -8,6 +8,7 @@ from collections import namedtuple
 
 Node = namedtuple('Node', ['parent', 'action', 'state', 'path'])
 
+
 class Problem:
     # __slots__ = ['inital_state']
     def __init__(self, initial_state):
@@ -20,12 +21,14 @@ class Problem:
         state[:action] = state[:action][::-1]
         return state
 
+
 def goal_test(l):
     equal = True
-    for x,y in zip(l,sorted(l)):
+    for x, y in zip(l, sorted(l)):
         if x != y:
             equal = False
     return equal
+
 
 def recursive_dls(node: Node, p: Problem, limit: int, child_count: int):
     if limit == 0:
@@ -35,12 +38,13 @@ def recursive_dls(node: Node, p: Problem, limit: int, child_count: int):
             return (None, True, child_count)    # cutoff
     elif limit > 0:
         any_remaining = False
-        for action in range(2,len(node.state)+1):
-            child = Node(node,action,p.result(node.state,action),
-                        tuple(node.path) + (action,))
+        for action in range(2, len(node.state)+1):
+            child = Node(node, action, p.result(node.state, action),
+                         tuple(node.path) + (action,))
             child_count += 1
 
-            found, remaining, child_count = recursive_dls(child, p, limit-1, child_count)
+            found, remaining, child_count = recursive_dls(
+                child, p, limit-1, child_count)
 
             if found != None:
                 return (found, True, child_count)
@@ -48,9 +52,11 @@ def recursive_dls(node: Node, p: Problem, limit: int, child_count: int):
                 any_remaining = True
         return (None, any_remaining, child_count)
 
+
 def depth_limited_search(problem: Problem, limit: int):
-    node = Node(None, 0, problem.initial_state,[0])
-    return recursive_dls(node,problem, limit, 0)
+    node = Node(None, 0, problem.initial_state, [0])
+    return recursive_dls(node, problem, limit, 0)
+
 
 def iterative_deepening(problem: Problem):
     for depth in range(10):
@@ -59,6 +65,7 @@ def iterative_deepening(problem: Problem):
             return (found, child_count)
         elif not remaining:
             return (None, 0)
+
 
 num = int(input())
 a = []
