@@ -27,33 +27,49 @@ def goal_test(l):
             equal = False
     return equal
 
-def recursive_dls(node: Node, problem: Problem, limit: int):
-    if goal_test(node.state):
-        return (node.path, True)
-    elif limit == 0:
-        return (None, True)    # cutoff
-    else:
-        cutoff = False
-        for action in range(2,len(problem.initial_state+1)):
-            child = Node(node,action,node.state,
+def recursive_dls(node: Node, p: Problem, limit: int, child_count: int):
+    if limit == 0:
+        if goal_test(node.state):
+            return (node.path, True, child_count)
+        else:
+            return (None, True, child_count)    # cutoff
+    elif limit > 0:
+        any_remaining = False
+        for action in range(2,len(node.state)+1):
+            child = Node(node,action,p.result(node.state,action),
                         tuple(node.path) + (action,))
+            child_count += 1
 
-            result, remaining = recursive_dls(child,problem,limit-1)
+            found, remaining, child_count = recursive_dls(child, p, limit-1, child_count)
 
-            if result != None:
-                return (result, True)
-            if remaining:   # failure
-                cutoff = True
-        return (None, cutoff)
+            if found != None:
+                return (found, True, child_count)
+            if remaining:   # remaining means we reached a cutoff
+                any_remaining = True
+        return (None, any_remaining, child_count)
 
 def depth_limited_search(problem: Problem, limit: int):
     node = Node(None, 0, problem.initial_state,[0])
-    return recursive_dls(node,problem,limit)
+    return recursive_dls(node,problem, limit, 0)
 
 def iterative_deepening(problem: Problem):
-    for depth in range(100):    # in the book it gives infinity??
-        result, cutoff = depth_limited_search(problem, depth)
-        if result != None:
-            return result
-        elif not cutoff:
-            return None
+    for depth in range(10):
+        found, remaining, child_count = depth_limited_search(problem, depth)
+        if found != None:
+            return (found, child_count)
+        elif not remaining:
+            return (None, 0)
+
+num = int(input())
+a = []
+for i in range(num):
+    a.append(input())
+
+#a = list("214635")
+p = Problem(a)
+result, count = iterative_deepening(p)
+if result == None:
+    print("None.")
+else:
+    print("Result:", *result)
+    print(count, "child nodes generated.")

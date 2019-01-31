@@ -5,7 +5,6 @@
 # h1pr1.py
 
 from collections import deque, namedtuple
-import time
 
 Node = namedtuple('Node', ['parent', 'action', 'state', 'path'])
 
