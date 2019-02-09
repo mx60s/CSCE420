@@ -1,0 +1,113 @@
+(Print this page as a cover sheet for your printouts)
+
+CSCE 420 HOMEWORK 2
+Dr. Daugherity
+Due: 11:59 P.M. Thursday, February 14, 2019
+
+"On my honor, as an Aggie, I have neither given nor received any unauthorized 
+aid on any portion of the academic work included in this assignment."
+
+
+________________________________	________________________________
+Typed or printed name of student	           Signature of student
+
+NOTE:  Please follow the instructions below for submitting your 
+assignment through CSNET.  ONLY ASSIGNMENTS SUBMITTED TO CSNET WILL BE GRADED!
+Make a printout of each source file and staple it behind this cover sheet.
+Sign it and turn it in in class Friday, February 15th.  IF YOU DO NOT TURN IN A 
+SIGNED COVER SHEET YOUR WORK WILL NOT BE GRADED!
+
+NOTE:  Homework will be graded on compute.cse.tamu.edu, using g++-8.2.0 with 
+-std=c++2a, or javac and java, or python3.6 (not python or python2 or 
+python3).
+
+You are free to develop your programs on any other platform, but it is your 
+responsibility to make sure your programs also compile and execute correctly on
+compute.cse.tamu.edu as specified.
+
+NOTE:  Each file submitted (hw2pr1.cpp, etc.--see below) must begin as follows:
+//Your name
+//Your UIN
+//CSCE 420
+//Due: February 14, 2019
+//hw2pr1.cpp (or whatever this file name is)
+
+NOTE:  Also write a README.txt file with whatever information is needed to
+compile and run your programs.  Zip the README.txt and the homework files into
+a single file named LastnameFirstnameHW2.zip (using your last name and first
+name) and submit to CSNET.
+
+The grade for this lab will be based on style (formatting, variable names, 
+comments, etc.), syntax (no compilation or link errors), and correctness 
+(passes all test cases).  Your grade for this lab is:
+Problem #	 1       2       3       4 
+Style             /2      /4      /4      /2 
+Syntax            /3      /6      /6      /3 
+Correctness       /5      /10     /10     /5
+-------------------------------------------------------------------
+Total             /10     /20     /20     /10
+Grand total _____/50
+
+1. (10 points) Code the mutually-recursive max_value and min_value functions
+specified in Figure 5.3 on page 166 and use them to find the max (root's value) 
+of a tree read in from the keyboard as a nested list.  For example, the tree
+in Figure 5.2 would be input as
+	((3,12,8),(2,4,6),(14,5,2))
+Hint: For this format, a tree is recursively defined as an integer (may be
+negative) or a pair of parentheses enclosing a comma-separated list of trees.
+Name your program hw2pr1.cpp, etc.
+
+2. (20 points) Modify problem 1 to do both alpha and beta pruning according to
+Figure 5.7 on page 170 and print a message "alpha pruning" or "beta pruning"
+each time that occurs (in addition to the max of the tree).  For example, the
+tree
+	((3,8,(7,(3,0,7),(8,8,2))),
+	 (4,(7,9,8),8),
+	 (((3,6,4),2,6),((9,2,9),4,7,(6,4,5) ),4,(6,4,5))
+	)
+would print "alpha pruning" 3 times and "beta pruning" 3 times.
+Name your program hw2pr2.cpp, etc.
+
+3. (20 points). Use your code from problem 2 to implement a "Tom Brady versus
+4 Rams" game like "Fox and Hounds" as described at
+https://en.wikipedia.org/wiki/Fox_games#Fox_and_Hounds, with Tom Brady being
+the fox and the 4 Rams defenders being the hounds.  The program plays Tom
+Brady using alpha-beta pruned minimax and the human plays the Rams.  Enter
+moves using the board square numbers in
+http://www.bobnewell.net/nucleus/media/1/20060512-blankw.png; note that
+although the traditional checkerboard colors are red and black, the rules
+specify "light" and "dark" so in this image green is the "dark" color.  Use
+this format for the game:
+	Rams are on squares 29 to 32
+	Tom Brady picks square 1
+	Which Ram do you want to move? 30
+	To which square? 26
+	Tom Brady moves to square 6
+and so on.
+Name your program hw2pr3.cpp, etc.
+
+OPTIONAL EXTRA CREDIT 
+=====================
+4. (10 points) Exercise 3.6(d) on page 114 presents the jug measurement problem.
+For a given set of initially empty jugs, find the shortest sequence of steps to
+obtain a specified volume exactly.  The legal moves are fill a jug completely,
+empty a jug on the ground, or pour all that will fit from one jug into another
+jug.  Use the following format for terminal input/output:
+	Number of jugs: 2
+	Volumes of jugs:
+	5
+	2
+	Desired volume: 1
+
+	Solution:
+	1. Fill 5
+	2. Fill 2 from 5
+	3. Empty 2
+	4. Fill 2 from 5
+	5. 5 now contains 1 gallon
+	
+So this problem takes 5 steps.  You may assume each jug has a different positive
+integer volume.
+
+Name your program hw2pr4.cpp etc.  
+
