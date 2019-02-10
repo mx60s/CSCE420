@@ -4,8 +4,6 @@
 # Due: February 14, 2019
 # hw2pr1.py
 
-# from anytree import Node
-
 
 class Node:
     def __init__(self):
@@ -17,49 +15,54 @@ class Node:
     def result(self, action):
         return self.children[action]
 
-    def utility(self):
-        return 1
-
     def test(self):
         return len(self.children) == 0
 
 
 def max_value(n: Node) -> Node:
     if n.test():
-        return n.utility()
+        return n
 
     v = Node()
     v.state = -10000
 
     for a in range(len(n.children)):
-        if v.state <= n.result(a).state:
-            v = n
+        temp = min_value(n.result(a))
+        if v.state <= temp.state:
+            v = temp
 
-    n = v
-    return n
+    return v
 
 
 def min_value(n: Node) -> Node:
     if n.test():
-        return n.utility()
+        
+        return n
 
     v = Node()
     v.state = 10000
 
-    for a in range(len(n.children)): # fix later
-        if v.state >= n.result(a).state:
-            v = n
-    n = v
+    for a in range(len(n.children)):
+        temp = max_value(n.result(a))
+        if v.state >= temp.state:
+            v = temp
     
-    return n
+    return v
 
 
 def minimax_decision(n: Node):
     val = min_value(n.result(0))
+
     for a in range(1,len(n.children)):
-        if n.result(a).state > val.state:
-            val = n.result(a)
+        temp = min_value(n.result(a))
+        if temp.state > val.state:
+            val = temp
+
     return val
+
+
+# ---------------------------------------------------------------------------
+# Taking input
 
 
 initial_state = "( ( 3 , 12 , 8 ) , ( 2 , 4 , 6 ) , ( 14 , 5 , 2 ) )"
@@ -67,26 +70,23 @@ n = Node()
 tree = initial_state.split()
 
 for c in initial_state.split():
-    #print(c)
     if str.isdigit(c):
         n.state = int(c)
-        #print("Setting node to",c)
+
     elif c == "(":
-        #print("Making a child")
         temp = Node()
         temp.parent = n
         n.children.append(temp)
         n = temp
+
     elif c == ")":
-        #print("Moving to parent")
         n = n.parent
+
     elif c == ",":
-        #print("Making a sibling")
         temp = Node()
         temp.parent = n.parent
         n.parent.children.append(temp)
         n.siblings.append(temp)
         n = temp
-    # print("state:",n.state)
 
 print(minimax_decision(n).state)
