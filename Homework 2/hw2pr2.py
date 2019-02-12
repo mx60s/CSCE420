@@ -14,11 +14,9 @@ def max_value(n: Node, alpha: int, beta: int) -> Node:
     v.state = -10000
 
     for a in range(len(n.children)):
-        # print("Max val:",n.result(a).state)
         temp = min_value(n.result(a), alpha, beta)
         if v.state <= temp.state:
             v = temp
-            # print("v is now", v.state)
         alpha = max(alpha, v.state)
         if beta <= alpha:
             print("Beta pruning")
@@ -35,11 +33,9 @@ def min_value(n: Node, alpha: int, beta: int) -> Node:
     v.state = 10000
 
     for a in range(len(n.children)):
-        # print("Min val:",n.result(a).state)
         temp = max_value(n.result(a), alpha, beta)
         if v.state >= temp.state:
             v = temp
-            # print("v is now", v.state)
         beta = min(beta, v.state)
         if beta <= alpha:
             print("Alpha pruning")
@@ -58,7 +54,7 @@ def alpha_beta_search(n: Node) -> Node:
 # Taking input
 
 
-initial_state = "( ( 3 , 8 , ( 7 , ( 3 , 0 , 7 ) , ( 8 , 8 , 2 ) ) ) , ( 4 , ( 7 , 9 , 8 ) , 8 ) , ( ( ( 3 , 6 , 4 ) , 2 , 6 ) , ( ( 9 , 2 , 9 ) , 4 , 7 , ( 6 , 4 , 5 ) ) , 4 , ( 6 , 4 , 5 ) ) ) "
+initial_state = "( ( 3 , 8 , ( 7 , ( 3 , 0 , 7 ) , ( 8 , 8 , 2 ) ) ) , ( 4 , ( 7 , 9 , 8 ) , 8 ) , ( ( ( 3 , 6 , 4 ) , 2 , 6 ) , ( ( 9 , 2 , 9 ) , 4 , 7 , ( 6 , 4 , 5 )   ) , 4 , ( 6 , 4 , 5 ) ) )"
 n = build_tree(initial_state)
 
 print(alpha_beta_search(n).state)
