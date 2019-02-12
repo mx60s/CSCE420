@@ -17,6 +17,9 @@ class Node:
     def test(self):
         return len(self.children) == 0
 
+    def utility(self):
+        return 1
+
 
 def max_value(n: Node) -> Node:
     if n.test():
