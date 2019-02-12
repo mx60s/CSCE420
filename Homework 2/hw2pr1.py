@@ -10,7 +10,6 @@ class Node:
         self.state = 0
         self.parent = None
         self.children = []
-        self.siblings = []
 
     def result(self, action):
         return self.children[action]
@@ -85,9 +84,7 @@ def build_tree(initial_state):
             temp = Node()
             temp.parent = n.parent
             n.parent.children.append(temp)
-            n.siblings.append(temp)
             n = temp
-    
     return n
 
 
@@ -95,4 +92,4 @@ initial_state = "( ( 3 , 12 , 8 ) , ( 2 , 4 , 6 ) , ( 14 , 5 , 2 ) )"
 
 n = build_tree(initial_state)
 
-print(minimax_decision(n).state)
+#print(minimax_decision(n).state)

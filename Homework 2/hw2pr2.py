@@ -6,7 +6,6 @@
 
 from hw2pr1 import Node, build_tree
 
-
 def max_value(n: Node, alpha: int, beta: int) -> Node:
     if n.test():
         return n
@@ -15,13 +14,15 @@ def max_value(n: Node, alpha: int, beta: int) -> Node:
     v.state = -10000
 
     for a in range(len(n.children)):
+        # print("Max val:",n.result(a).state)
         temp = min_value(n.result(a), alpha, beta)
         if v.state <= temp.state:
             v = temp
-        if v.state >= beta:
-            return v
+            # print("v is now", v.state)
         alpha = max(alpha, v.state)
-        print("Alpha pruning")
+        if beta <= alpha:
+            print("Beta pruning")
+            break
 
     return v
 
@@ -34,13 +35,15 @@ def min_value(n: Node, alpha: int, beta: int) -> Node:
     v.state = 10000
 
     for a in range(len(n.children)):
+        # print("Min val:",n.result(a).state)
         temp = max_value(n.result(a), alpha, beta)
         if v.state >= temp.state:
             v = temp
-        if v.state <= alpha:
-            return v
-        beta = min(beta, v.state) 
-        print("Beta pruning")
+            # print("v is now", v.state)
+        beta = min(beta, v.state)
+        if beta <= alpha:
+            print("Alpha pruning")
+            break
     
     return v
 
@@ -55,7 +58,7 @@ def alpha_beta_search(n: Node) -> Node:
 # Taking input
 
 
-initial_state = "( ( 3 , 12 , 8 ) , ( 2 , 4 , 6 ) , ( 14 , 5 , 2 ) )"
+initial_state = "( ( 3 , 8 , ( 7 , ( 3 , 0 , 7 ) , ( 8 , 8 , 2 ) ) ) , ( 4 , ( 7 , 9 , 8 ) , 8 ) , ( ( ( 3 , 6 , 4 ) , 2 , 6 ) , ( ( 9 , 2 , 9 ) , 4 , 7 , ( 6 , 4 , 5 ) ) , 4 , ( 6 , 4 , 5 ) ) ) "
 n = build_tree(initial_state)
 
 print(alpha_beta_search(n).state)
