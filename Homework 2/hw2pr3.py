@@ -10,39 +10,14 @@
 
 import numpy as np
 
-class Node:
-    def __init__(self, board):
-        self.state = board
-        self.parent = None
-        self.children = []
-
-    def result(self, pos, action):
-        if action in self.state.get_moves(pos):
-            return 1
-
-    def test(self):
-        return len(self.children) == 0
-
-    def utility(self):
-        return 1
-
-class Game:
+class Board:
     def __init__(self):
         self.board = np.zeros((8,8))
-
         self.board[7][6] = 2
         self.board[0][1] = -1
         self.board[0][3] = -1
         self.board[0][5] = -1
         self.board[0][7] = -1
-        print(self.board)
-        self.tom_pos = (7,6)
-        self.num_to_board = {}
-        ind1 = 7
-        ind2 = 6
-        #for i in range(1,33):
-         #   if ind1 % 2 == 0:
-          #      ind2
 
         self.num_to_board = {
             1 : (7,6),
@@ -79,9 +54,8 @@ class Game:
             32 : (0,1)
         }
 
-
     def get_moves(self, pos: int) -> list:
-        new_pos = self.num_to_board[pos]
+        new_pos = self.board.num_to_board[pos]
         moves = []
         if new_pos[0] + 1 < 8 and new_pos[1] + 1 < 8:
             if self.board[new_pos[0] + 1][new_pos[1] + 1] != -1:
@@ -110,72 +84,115 @@ class Game:
         return self.board
 
 
-    def is_finished(self, tom: int) -> bool:
-        if tom in [29, 30, 31, 32]:
-            return True
-       
-        if len(self.get_moves(tom)) == 0:
-            return True
+class Node:
+    def __init__(self, board: Board):
+        self.state = board
+        self.action = 0
 
+    def result(self, pos, action):
+        if action in self.state.get_moves(pos):
+            return Node(self.state.move(pos, action))
+
+    def test(self):
+        return len(self.state.get_moves) == 0
+
+    def utility(self):
+        if len(self.state.get_moves(self.action)) == 0:
+            return -1
+        elif self.action in [29, 30, 31, 32]:
+            return 1
+        else:
+            return self.action/32
+
+
+class Game:
+    def __init__(self):
+        self.board = Board()
+        self.tom = TomBrady(self)
+
+    def is_finished(self) -> bool:
+        if self.tom.pos in [29, 30, 31, 32]:
+            return True
+        if len(self.board.get_moves(self.tom.pos)) == 0:
+            return True
         return False
-        
-        
+
+    def rams_turn(self) -> None:
+        return 1
 
     def play(self, tom: Node) -> None:
         # don't forgot to update their positions
-        while not self.is_finished(tom):
-            play_rams()
-            play_brady()
+        self.tom.start_position()
+        self.rams_turn()
+        while not self.is_finished():
+            self.tom.move(self.board)
+            if self.is_finished():
+                print("Game finished")
+                return
+            self.rams_turn()
+            if self.is_finished():
+                print("Game finished")
+                return
 
 
-def max_value(n: Node, game: Game) -> Node:
-    if n.test() or game.is_finished():
-        return n.utility()
+class TomBrady:
+    def __init__(self, game: Game):
+        self.pos = 1
+        self.board = game.board
+        self.depth = 100
 
-    v = Node(game.board)
-    v.state = -10000
-
-    for a in range(len(n.children)):
-        temp = min_value(n.result(a), game)
-        if v.state <= temp.state:
-            v = temp
-
-    return v
-
-
-def min_value(n: Node, game: Game) -> Node:
-    if n.test() or game.is_finished():
-        return n.utility
-
-    v = Node(game.board)
-    v.state = 10000
-
-    for a in range(len(n.children)):
-        temp = max_value(n.result(a),game)
-        if v.state >= temp.state:
-            v = temp
-
-    return v
+    def start_position(self) -> None:
+        return
+    
+    def move(self, state: Board):
+        action = self.alpha_beta_search()
+        return action
 
 
-def minimax_decision(n: Node, game: Game):
-    val = min_value(n.result(0), game)
+    def max_value(self, n: Node, alpha: int, beta: int, d: int) -> Node:
+        if n.test() or d == self.depth:
+            return n
 
-    for a in range(1, len(n.children)):
-        temp = min_value(n.result(a), game)
-        if temp.state > val.state:
-            val = temp
+        v = Node(n.board)
+        util = -10000
 
-    return val
+        for a in range(len(n.state.get_moves(n.action))):
+            temp = self.min_value(n.result(a), alpha, beta, d - 1)
+            if util <= temp.utility():
+                v = temp
+                util = v.utility()
+            alpha = max(alpha, util)
+            if beta <= alpha:
+                print("Beta pruning")
+                break
+
+        return v
 
 
-def play_rams() -> None:
-    ram = input("Which Ram do you want to move?")
-    # validate input
-    pos = input("To which square?")
-    # validate input
+    def min_value(self, n: Node, alpha: int, beta: int, d: int) -> Node:
+        if n.test() or d == self.depth:
+            return n
 
-def play_brady() -> None:
-    return
+        v = Node(n.board)
+        util = 10000
+
+        for a in range(len(n.children)):
+            temp = self.max_value(n.result(a), alpha, beta, d - 1)
+            if util >= temp.utility():
+                v = temp
+                util = v.utility()
+            beta = min(beta, v.utility())
+            if beta <= alpha:
+                print("Alpha pruning")
+                break
+    
+        return v
+
+
+    def alpha_beta_search(self) -> Node:
+        n = Node(self.board)
+        v = self.max_value(n, -10000, 10000, 0)
+        return v.action   # idk
+
 
 g = Game()
