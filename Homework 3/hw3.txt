@@ -1,0 +1,162 @@
+(Print this page as a cover sheet for your printouts)
+
+CSCE 420 HOMEWORK 3
+Dr. Daugherity
+Due: 11:59 P.M. Thursday, February 28, 2019
+
+"On my honor, as an Aggie, I have neither given nor received any unauthorized 
+aid on any portion of the academic work included in this assignment."
+
+
+________________________________	________________________________
+Typed or printed name of student	           Signature of student
+
+NOTE:  Please follow the instructions below for submitting your 
+assignment through CSNET.  ONLY ASSIGNMENTS SUBMITTED TO CSNET WILL BE GRADED!
+Make a printout of each source file and staple it behind this cover sheet.
+Sign it and turn it in in class Friday, March 1st.  IF YOU DO NOT TURN IN A 
+SIGNED COVER SHEET YOUR WORK WILL NOT BE GRADED!
+
+NOTE:  Homework will be graded on compute.cse.tamu.edu, using g++-8.2.0 with 
+-std=c++2a, or javac and java, or python3.6 (not python or python2 or 
+python3).
+
+You are free to develop your programs on any other platform, but it is your 
+responsibility to make sure your programs also compile and execute correctly on
+compute.cse.tamu.edu as specified.
+
+NOTE:  Each file submitted (hw3pr1.cpp, etc.--see below) must begin as follows:
+//Your name
+//Your UIN
+//CSCE 420
+//Due: February 28, 2019
+//hw3pr1.cpp (or whatever this file name is)
+
+NOTE:  Also write a README.txt file with whatever information is needed to
+compile and run your programs.  Zip the README.txt and the homework files into
+a single file named LastnameFirstnameHW3.zip (using your last name and first
+name) and submit to CSNET.  See @53 on piazza.com for more details.
+
+The grade for this lab will be based on style (formatting, variable names, 
+comments, etc.), syntax (no compilation or link errors), and correctness 
+(passes all test cases).  Your grade for this lab is:
+Problem #	 1       2       3       4 
+Style             /2      /4      /4      /2 
+Syntax            /3      /6      /6      /3 
+Correctness       /5      /10     /10     /5
+-------------------------------------------------------------------
+Total             /10     /20     /20     /10
+Grand total _____/50
+
+1. (10 points) Write a program named hw3pr1.cpp etc. to solve a simple class of
+cryptarithmetic problems MORE EFFICIENTLY THAN BY BRUTE FORCE (EXHAUSTIVE
+SEARCH) by using at least 3 heuristics, either from the textbook or logical
+deductions about even/odd, digit range, etc.  For example, in the test case 
+
+ CADET
++CORPS
+------
+ TROOP
+
+given below your program could deduce that C<5.  (You do not have to use this 
+deduction; this is just an example of a deduction which would reduce the search
+space.) By convention, each letter stands for a different digit and there are
+no leading zeroes.
+
+Your program should read three strings, right justify the strings to make an 
+addition problem, and find a solution.  (Any string can be any length.)  If 
+there is more than one solution, you only need to find one.  For the example in
+Figure 6.2 on page 207, the input would be
+
+TWO
+TWO
+FOUR
+
+Run your program on this example plus the following:
+
+TURING
+TESTER
+SUCCESS
+
+CADET
+CORPS
+TROOP
+
+FACE
+PALM
+YMMV
+
+The grader will also run your project on additional problems.  You may assume
+the input contains only upper case letters, and no more than 10 different 
+letters. 
+
+2. (20 points) Write a Horn clause inference engine which accepts a filename
+from the user and reads Horn clauses from that file followed by a query (that
+is, what you are asking to be proven).
+
+The format of the input file will be one Horn clause per line in PROLOG 
+notation (see section 9.4.2).  For example, if the data file contains
+
+	B:-A.
+	D:-B,C.
+	A.
+	C.
+	?D.
+
+then the program will print "TRUE" since it can deduce from the Horn clauses
+that D is true. Print "FALSE" if you cannot prove the query.   
+
+Hint: Use the DPLL_satisfiable function in Figure 7.17 on page 261.
+
+To prove D is equivalent to saying the Horn clauses entail (imply) D.  Since an
+implication is only false if the "if" side is true and the "then" side is false,
+we add "not D" to the list of Horn clauses and call DPLL_satisfiable.  If it
+returns false, that means "not not D" must be true, which is D, which is what
+we were trying to prove, so output "TRUE."  If the query had been E then
+adding "not E" and calling DPLL_satisfiable would result in true, so output
+"FALSE."
+
+Hint: In PROLOG notation "not D" can be written
+	:-D.
+Since the "then" side can always be or'ed with false, this is equivalent to
+	D --> false
+which is equivalent to "not D."  Another way of thinking about it is that the
+"then" side of a Horn clause is false or'ed with whatever terms are there (in
+this case none).
+
+Name your program hw3pr2.cpp etc.  
+
+3. (20 points) Write a program named hw3pr3.cpp etc. which prints the truth
+table for any formula in CNF with 1 or 2 terms in each clause.  Use - for
+negation and + for OR.  Read the input from the keyboard (stdin) and stop at
+Control-D (the end of file character on Unix).  A sample run of your program 
+should look like this:
+
+	Enter the clauses in your CNF formula, one per line:
+	Q+-R
+	P
+	-P+R
+	Control-D (end of file)
+
+	P  Q  R  Formula
+	----------------
+	F  F  F     F
+	F  F  T     F
+	F  T  F     F
+	F  T  T     F
+	T  F  F     F
+	T  F  T     F
+	T  T  F     F
+	T  T  T     T
+
+The variables will be single upper-case letters A-Z, so there could be up to 26
+variables, but we will only test it up to 6 variables. :-)
+
+OPTIONAL EXTRA CREDIT 
+=====================
+4. (10 points)  Write a program named hw3pr4.cpp etc. to answer the 3 questions
+in Exercise 7.2 on page 280 by some form of logical deduction, reusing your 
+code from problem 2 or problem 3.  Output the word "SUCCESS" to mean your
+program proved a question, or the word "FAILURE" to mean your program failed to
+prove the question.  That is, your program will output three words (one per
+line) to answer the three questions "Can you prove...?".

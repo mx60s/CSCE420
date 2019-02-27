@@ -5,6 +5,7 @@
 # hw2pr1.py
 
 
+# Each node makes up the minimax tree
 class Node:
     def __init__(self):
         self.state = 0
@@ -14,6 +15,7 @@ class Node:
     def result(self, action):
         return self.children[action]
 
+    # This method checks if a node is a leaf
     def test(self):
         return len(self.children) == 0
 
@@ -21,6 +23,7 @@ class Node:
         return 1
 
 
+# Maximize my values
 def max_value(n: Node) -> Node:
     if n.test():
         return n
@@ -35,7 +38,7 @@ def max_value(n: Node) -> Node:
 
     return v
 
-
+# Minimize the values for the opponent
 def min_value(n: Node) -> Node:
     if n.test():
 
@@ -51,8 +54,8 @@ def min_value(n: Node) -> Node:
 
     return v
 
-
-def minimax_decision(n: Node):
+# Calculates the best possible decision for the top node.
+def minimax_decision(n: Node) -> Node:
     val = min_value(n.result(0))
 
     for a in range(1, len(n.children)):
@@ -66,7 +69,7 @@ def minimax_decision(n: Node):
 # ---------------------------------------------------------------------------
 # Taking input
 
-def build_tree(initial_state):
+def build_tree(initial_state) -> Node:
     tree = initial_state.split()
     n = Node()
 
@@ -91,8 +94,19 @@ def build_tree(initial_state):
     return n
 
 
-initial_state = "( ( 3 , 12 , 8 ) , ( 2 , 4 , 6 ) , ( 14 , 5 , 2 ) )"
 
-n = build_tree(initial_state)
+i = input("Please input your tree, one character at a time: >")
+initial = ""
+parens = 1
+while(parens > 0):
+    i = input("> ")
+    if i == "(":
+        parens += 1
+    elif i == ")":
+        parens += 1
+    initial += " "
+    initial += i
 
-#print(minimax_decision(n).state)
+n = build_tree(initial)
+
+print(minimax_decision(n).state)

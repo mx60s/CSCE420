@@ -4,15 +4,14 @@
 # Due: February 14, 2019
 # hw2pr3.py
 
-# so here, max is tom brady
-# min is the rams (human player), but it might not need an algorithm cause it'll just be taking command line input
-# so maybe nodes need to be mapped then
-
 import numpy as np
 
+# The board is a numpy matrix of zeros, with "2" indicating Brady and "-1" indicating the Rams
+# Also included is a dictionary which maps the actual indicides to the board values the player is familiar with
 class Board:
     def __init__(self):
         self.b = np.zeros((8,8))
+        # Set the players' initial positions (Tom can change this later, but it's the default)
         self.b[7][6] = 2
         self.b[0][1] = -1
         self.b[0][3] = -1
@@ -89,31 +88,27 @@ class Board:
             (0,1) : 32
         }
 
-    def get_moves(self, pos: tuple) -> list:
+    def get_moves(self, pos: tuple) -> list:    # The available moves are useful in checking if a move is valid
         print("Possible moves for position", pos)
         moves = []
         if type(pos) != tuple:
-            pos = self.num_to_board[int(pos)]
-            # print(pos)
-        if self.b[pos[0]][pos[1]] == 2:
+            pos = self.num_to_board[int(pos)]   # Convert to indices
+
+        # Check if each of the diagonal spots are available (not covered by another player or off the board)
+        if self.b[pos[0]][pos[1]] == 2:     # If we're moving Tom, he can move backwards or forwards
             if pos[0] + 1 < 8 and pos[1] + 1 < 8:
                 if self.b[pos[0] + 1][pos[1] + 1] == 0:
-                    #print(pos[0]+1, ",", pos[1]+ 1)
                     moves.append((pos[0] + 1, pos[1] + 1))
             if pos[0] + 1 < 8 and pos[1] - 1 >= 0:
                 if self.b[pos[0] + 1][pos[1] - 1] == 0:
-                    #print(pos[0]+1, ",", pos[1]- 1)
                     moves.append((pos[0] + 1, pos[1] - 1))
         if pos[0] - 1 >= 0 and pos[1] - 1 >= 0:
             if self.b[pos[0] - 1][pos[1] - 1] == 0:
-                #print(pos[0]-1, ",", pos[1]- 1)
                 moves.append((pos[0] - 1, pos[1] - 1))
         if pos[0] - 1 >= 0 and pos[1] + 1 < 8:
             if self.b[pos[0] - 1][pos[1] + 1] == 0:
-                #print(pos[0]-1, ",", pos[1]+ 1)
                 moves.append((pos[0] - 1, pos[1] + 1))
 
-        print(*moves)
         return moves
 
 
@@ -124,10 +119,11 @@ class Board:
         return self
 
 
+# The node class keeps its state as an instance of the board, and also includes the action which got it to that state
 class Node:
     def __init__(self, b: Board):
         self.state = b
-        self.action = (7,6)
+        self.action = (7,6) # Corresponds to spot 1
 
     def result(self, action):
         if action in self.state.get_moves(self.action):
@@ -135,16 +131,18 @@ class Node:
             n.action = action
             return n
 
+    # Check if Tom is stuck or if he has reached the goal.
     def test(self):
         return (len(self.state.get_moves(self.action)) == 0) or (self.action in [(0,1), (0,3), (0,5), (0,7)])
 
+    # Reward Tom for getting closer to the goals
     def utility(self):
-        if len(self.state.get_moves(self.action)) == 0:
-            return -1
-        elif self.action in [29, 30, 31, 32]:
-            return 1
-        else:
-            return self.state.board_to_num[self.action]/32
+        #if len(self.state.get_moves(self.action)) == 0:
+         #   return -1
+        #elif self.action in [29, 30, 31, 32]:
+         #   return 1
+        #else:
+            return self.state.board_to_num[self.action]
 
 
 class Game:
@@ -152,6 +150,7 @@ class Game:
         self.gameboard = Board()
         self.tom = TomBrady(self)
 
+    # Check if Tom has reached the goal or been trapped by the Rams
     def is_finished(self) -> bool:
         if self.tom.pos in [29, 30, 31, 32]:
             print("Tom wins")
@@ -161,27 +160,30 @@ class Game:
             return True
         return False
 
+    # Conducts the rams turn by taking input from the keyboard and checking if that is a valid move
     def rams_turn(self) -> None:
         while(True):
             ram = input("Which ram do you want to move? ")
-            ram_pos = self.gameboard.num_to_board[int(ram)]
-            if self.gameboard.b[ram_pos[0]][ram_pos[1]] == -1:
+            ram_pos = self.gameboard.num_to_board[int(ram)] # Converts the input to indices for the matrix
+            if self.gameboard.b[ram_pos[0]][ram_pos[1]] == -1:  # If we've found a ram at that spot
                 break
             else:
-                print("There's not a ram in that square.")
-        while(True):
+                print("There's not a ram in that square.")  # If not, continue to loop until we find one
+        while(True):    # Loop until you get correct input
             move = input("Where do you want to move? ")
             print(move, "maps to", self.gameboard.num_to_board[int(move)])
             if self.gameboard.num_to_board[int(move)] not in self.gameboard.get_moves(ram):
                 print("That's not a valid move.")
             else:
                 break
+        # Update the board here
         self.gameboard.b[ram_pos[0]][ram_pos[1]] = 0
         move_pos = self.gameboard.num_to_board[int(move)]
         self.gameboard.b[move_pos[0]][move_pos[1]] = -1
 
+    # This is the actual gameplay here
     def play(self) -> None:
-        self.tom.start_position()
+        self.tom.start_position()   # Tom may pick his starting position
         while (True):
             self.gameboard.move(self.tom.pos, self.tom.move(self.gameboard))
             if self.is_finished():
@@ -194,16 +196,17 @@ class Game:
                 print("Game finished")
                 return
 
-
+# Tom is the 
 class TomBrady:
     def __init__(self, game: Game):
         self.pos = 1
         self.board = game.gameboard
-        self.depth = 2
+        self.depth = 10     # possible depth for the minimax tree
 
     def start_position(self) -> None:
         return
     
+    # Calculate an action from the minimax tree, then move.
     def move(self, state: Board):
         action = self.alpha_beta_search()
         print("Tom moved to space", action)
@@ -234,15 +237,13 @@ class TomBrady:
 
 
     def min_value(self, n: Node, alpha: int, beta: int, d: int) -> Node:
-        print("Min value")
+        # print("Min value")
         if n.test() or d == self.depth:
-            print("Test returned true in min")
             return n
 
-        print("v")
         v = Node(n.state)
         util = 10000
-        print("children")
+
         for a in n.state.get_moves(n.action):
             temp = self.max_value(n.result(a), alpha, beta, d + 1)
             if util >= temp.utility():
@@ -250,7 +251,7 @@ class TomBrady:
                 util = v.utility()
             beta = min(beta, v.utility())
             if beta <= alpha:
-                print("Alpha pruning")
+                # print("Alpha pruning")
                 break
     
         return v
@@ -259,7 +260,7 @@ class TomBrady:
     def alpha_beta_search(self) -> Node:
         n = Node(self.board)
         v = self.max_value(n, -10000, 10000, 0)
-        return v.action   # idk
+        return v.action 
 
 
 g = Game()

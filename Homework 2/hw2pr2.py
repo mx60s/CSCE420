@@ -4,8 +4,9 @@
 # Due: February 14, 2019
 # hw2pr2.py
 
-from hw2pr1 import Node, build_tree
+from hw2pr1 import Node, build_tree     # The node and build_tree information works fine for this problem
 
+# Maximize my values, while also pruning the beta values.
 def max_value(n: Node, alpha: int, beta: int) -> Node:
     if n.test():
         return n
@@ -54,7 +55,18 @@ def alpha_beta_search(n: Node) -> Node:
 # Taking input
 
 
-initial_state = "( ( 3 , 8 , ( 7 , ( 3 , 0 , 7 ) , ( 8 , 8 , 2 ) ) ) , ( 4 , ( 7 , 9 , 8 ) , 8 ) , ( ( ( 3 , 6 , 4 ) , 2 , 6 ) , ( ( 9 , 2 , 9 ) , 4 , 7 , ( 6 , 4 , 5 )   ) , 4 , ( 6 , 4 , 5 ) ) )"
-n = build_tree(initial_state)
+i = input("Please input your tree, one character at a time: >")
+initial = ""
+parens = 1
+while(parens > 0):
+    i = input("> ")
+    if i == "(":
+        parens += 1
+    elif i == ")":
+        parens += 1
+    initial += " "
+    initial += i
+
+n = build_tree(initial)
 
 print(alpha_beta_search(n).state)

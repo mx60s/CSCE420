@@ -74,7 +74,7 @@ https://en.wikipedia.org/wiki/Fox_games#Fox_and_Hounds, with Tom Brady being
 the fox and the 4 Rams defenders being the hounds.  The program plays Tom
 Brady using alpha-beta pruned minimax and the human plays the Rams.  Enter
 moves using the board square numbers in
-http: //www.bobnewell.net/nucleus/media/1/20060512-blankw.png; note that
+http://www.bobnewell.net/nucleus/media/1/20060512-blankw.png; note that
 although the traditional checkerboard colors are red and black, the rules
 specify "light" and "dark" so in this image green is the "dark" color.  Use
 this format for the game:
