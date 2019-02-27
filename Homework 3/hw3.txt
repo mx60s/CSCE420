@@ -97,11 +97,11 @@ is, what you are asking to be proven).
 The format of the input file will be one Horn clause per line in PROLOG 
 notation (see section 9.4.2).  For example, if the data file contains
 
-	B:-A.
-	D:-B,C.
-	A.
-	C.
-	?D.
+	B:-A. .............. A -> B
+	D:-B,C. ............ B ^ C -> D
+	A. ................. A
+	C. ................. C
+	?D. ................ question D
 
 then the program will print "TRUE" since it can deduce from the Horn clauses
 that D is true. Print "FALSE" if you cannot prove the query.   
