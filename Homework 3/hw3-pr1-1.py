@@ -5,6 +5,7 @@
 # hw3pr1.py
 
 from collections import namedtuple
+import itertools as it
 
 
 Var = namedtuple('var', 'letter, assignment, domain, relations')
@@ -39,9 +40,20 @@ def parse_results(first, second, result):
     return variables, aux
 
 
+def solve_crypta(variables, auxillary):
+    domains = []
+    for k, v in variables.items():
+        domains.append(v.domain)
+    print(*domains)
+    for combo in it.product(*domains): # need to be using the domains
+        print(combo)
+
+
 
 
 print("Please input your cryptarithmic problem, one line per word:")
 first = input().lower()
 second = input().lower()
 result = input().lower()
+variables, aux = parse_results(first, second, result)
+solve_crypta(variables, aux)
