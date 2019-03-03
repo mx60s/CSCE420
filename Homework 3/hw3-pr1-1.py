@@ -44,8 +44,8 @@ def solve_crypta(variables, auxillary):
     domains = []
     for k, v in variables.items():
         domains.append(v.domain)
-    print(*domains)
-    for combo in it.product(*domains): # need to be using the domains
+
+    for combo in it.product(*domains): 
         print(combo)
 
 
