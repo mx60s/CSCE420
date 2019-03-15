@@ -4,6 +4,7 @@
 # Due: February 28, 2019
 # hw3pr2.py
 
+
 ######## Input ########
 print("Please input a filename (including extension) from which commands should be read.")
 filename = input("> ")

@@ -16,7 +16,7 @@ def parse_results(first, second, result):
     variables = {}
     for l in letters:
         variables[l] = Var(l, 0, list(range(10)), [])
-   
+
     aux = [0] * len(first)
 
     if len(result) > len(first):
@@ -29,7 +29,7 @@ def parse_results(first, second, result):
     for i in range(len(first)):
         side1 = str(aux[i]) + '+' + str(first[i]) + '+' + str(second[i])
         side2 = str(result[j]) + '+' + str(aux[i] + 1) + '*10'
-        print(side1,'=', side2)
+        print(side1, '=', side2)
         variables[first[i]].relations.append((side1, side2))
         if first[i] != second[i]:
             variables[second[i]].relations.append((side1, side2))
@@ -45,10 +45,8 @@ def solve_crypta(variables, auxillary):
     for k, v in variables.items():
         domains.append(v.domain)
 
-    for combo in it.product(*domains): 
+    for combo in it.product(*domains):
         print(combo)
-
-
 
 
 print("Please input your cryptarithmic problem, one line per word:")

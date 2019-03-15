@@ -1,0 +1,161 @@
+(Print this page as a cover sheet for your printouts)
+
+CSCE 420 HOMEWORK 4
+Dr. Daugherity
+Due: 11:59 P.M. Thursday, March 21, 2019
+
+"On my honor, as an Aggie, I have neither given nor received any unauthorized 
+aid on any portion of the academic work included in this assignment."
+
+
+________________________________	________________________________
+Typed or printed name of student	           Signature of student
+
+NOTE:  Please follow your lab instructor's directions for submitting your 
+assignment through CSNET.  ONLY ASSIGNMENTS SUBMITTED TO CSNET WILL BE GRADED!
+Make a printout of each source file and staple it behind this cover sheet.
+Sign it and turn it in in class Friday, March 22nd.  IF YOU DO NOT TURN IN A
+SIGNED COVER SHEET YOUR WORK WILL NOT BE GRADED!
+
+NOTE:  Homework will be graded on compute.cse.tamu.edu, using gprolog 1.4.4.
+
+You are free to develop your programs on any other platform, but it is your 
+responsibility to make sure your programs also compile and execute correctly
+on compute.cse.tamu.edu as specified.
+
+NOTE:  Each file submitted (hw4pr1.pl, etc.--see below) must begin as
+follows:
+//Your name
+//Your UIN
+//CSCE 420
+//Due: March 21, 2019
+//hw4pr1.pl (or whatever this file name is)
+
+NOTE:  Also write a README.txt file with whatever information is needed to
+compile and run your programs.  Zip the README.txt and the homework files into
+a single file named LastnameFirstnameHW3.zip (using your last name and first
+name) and submit to CSNET.  See @53 on piazza.com for more details.
+
+The grade for this lab will be based on style (formatting, variable names, 
+comments, etc.), syntax (no compilation or link errors), and correctness 
+(passes all test cases).  Your grade for this lab is:
+Problem #	 1       2       3       4 
+Style             /2      /4      /4      /2 
+Syntax            /3      /6      /6      /3 
+Correctness       /5      /10     /10     /5
+-------------------------------------------------------------------
+Total             /10     /20     /20     /10
+Grand total _____/50
+
+1. (10 points)  Implement Exercise 9.16 on page 363 parts (a) through (c) as a
+PROLOG program named hw4pr1.pl, but use the prefix my_, e.g., my_sorted,
+my_perm, and my_sort.  You may not use the builtin PROLOG predicates
+
+permutation
+sort
+msort
+keysort
+min_list
+max_list
+
+(although you may write your own my_ versions of these if you wish).
+
+Hints: Think recursively!  What base case(s) do you need?
+
+2. (20 points) Complete this PROLOG program to find a path on the map in
+Figure 3.2 on page 68 between any pair of cities.  Be sure the path you find is
+acyclic, i.e., has no loops like [a,s,r,p,c,s,r,b].
+
+adjacent(a,t).
+adjacent(a,s).
+adjacent(a,z).
+adjacent(s,o).
+adjacent(s,f).
+adjacent(s,r).
+adjacent(o,a).
+adjacent(f,b).
+adjacent(r,p).
+adjacent(p,b).
+%path(P,Start,Goal) means list P is a path from Start to Goal
+path([Goal],Goal,Goal).
+path([X,Y],X,Y):-adjacent(X,Y).
+path([X,Y],X,Y):-adjacent(Y,X).
+path([Start|[Head|Tail]],Start,Goal):-adjacent(Start,Head),
+					path([Head|Tail],Head,Goal).
+
+Name your program hw4pr2.pl.  Hint: PROLOG checks predicates in order, so 
+choose the order carefully.
+
+3. (20 points) Google "British royal family" to add the newer generations
+to Figure 8.7 on page 318 (e.g., William's wife and children, Harry's wife
+Meghan and the soon-to-be-born meghans_baby, etc.) and then do Exercise 8.14 on
+page 318 in PROLOG.  However, you do not need to write mth cousin n times
+removed.  You may add additional predicates if needed.  Follow the PROLOG 
+convention of only capitalizing variable names; e.g,
+
+	?- mother(X, charles).
+
+returns X = elizabeth.  You should write enough predicates to deduce
+
+	?- grandchild(X, elizabeth).
+	?- brother_in_law(X, diana).
+	?- greatgrandparent(X, zara).
+	?- ancestor(X, eugenie).
+
+as specified, plus
+
+	?- greatgrandchild(X, king_george).
+	?- first_cousin(mia,X).
+	?- second_cousin(prince_george, X).
+
+where second cousins are the children of first cousins.  Use the broad 
+definition of ancestor, namely, "person decended from."  Also, call the two 
+Georges "king_george" and "prince_george."  Name your program hw4pr3.pl.
+
+Hints:  Remember gprolog requires that you place all statements for each 
+predicate together.  Also, be careful writing too many statements or you may 
+cause an infinite loop, e.g.,
+
+	child(A, B) :- parent(B, A).
+	parent(A, B) :- child(B, A).
+
+is true logically but may cause PROLOG to loop till stack space is exhausted.
+
+OPTIONAL EXTRA CREDIT
+=====================
+4. (10 points)  Modify problem 1 to do a topological sort of a partial order,
+which is a list of ordered pairs [left, right] which you can think of as 
+meaning left<=right.  The predicate to define is 
+my_topo_sort(Partial_order, Total_order).
+
+For example, we might have a partial order
+[[left_sock, left_shoe], [right_sock, right_shoe]]
+to describe the constraints on the order in which to get dressed.
+
+A topological sort of a partial order then produces a total order, which is a
+linearization consistent with the partial order.  For the example above, 
+[left_sock, left_shoe, right_sock, right_shoe] and
+[left_sock, right_sock, left_shoe, right_shoe] would both be acceptable
+linearizations.  No linearization is possible in the case of a circular
+majority, e.g., [[a,b], [b,c], [c,a]], since <= is transitive (unless of course
+a, b, and c are all the same).
+
+Hint: The UNIX command tsort does a topological sort.
+
+To code a topological sort in PROLOG we can use "negation as failure" so that
+if we cannot prove two elements in the list to be topologically sorted are
+out of order, we can assume they are not out of order (the closed-world
+assumption).  That allows us to say, e.g., that an element of a list is the
+max if we can't prove it's not the max.
+
+For the example above, first make a list of all the elements in all the
+constraints: [left_sock, left_shoe, right_sock, right_shoe].  Then eliminate
+duplicates (if any).  Next sort as in problem 1 but with my_max finding an 
+element M which you can't prove is not the maximum (i.e., you can't prove there
+is a constraint [M, M2] in the list of constraints, which would mean M2 >= M 
+and M would not be guaranteed to be the maximum).
+
+Name your program hw4pr4.pl.  Don't forget to try lots of test cases in
+addition to 
+?-my_topo_sort([[left_sock, left_shoe], [right_sock, right_shoe]], TotalOrder).
+Name your program hw4pr4.pl.
