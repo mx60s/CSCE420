@@ -64,9 +64,15 @@ greatgrandparent(A, B) :-
     parent(Y, X),
     A = Y.
 
-ancestor(A, B) :-       % Almost
+ancestor(A, B) :- 
     parent(X, B), 
-    (A = X ; ancestor(A, X)).
+    ancestor_next(Y, X).
+
+ancestor_next(A, B) :-
+    sister(X, B), 
+    brother(Y, B),
+    parent(Z, B),
+    ancestor_next(A, Z).
 
 mother(A, B) :-
     parent(X, B),
@@ -110,7 +116,7 @@ firstcousin(A, B) :-
     parent(Y, Z),
     A = Z.
 
-brotherinlaw(A, B) :-                   % fuck idk
+brotherinlaw(A, B) :-
     (sister(X, B) ; brother(X, B)),
     parent(X, Y),
     parent(Z, Y),
