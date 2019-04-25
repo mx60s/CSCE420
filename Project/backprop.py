@@ -16,7 +16,7 @@ def import_bdfs(directory):
                 if (line == "STARTCHAR A\n"):
                     start = i
                     break
-            #print(lines[i + 4])
+            
             letter = 'A'
             i = start + 4
             count = 0
@@ -26,24 +26,24 @@ def import_bdfs(directory):
                 digit = []
                 width = int(re.search(r'\d+', lines[i]).group(0))
                 height = int(re.search(r'\d+', lines[i][6:]).group(0))
-                #print(lines[i+2])
+                
                 i += 2
                 for h in range(height):
                     bitline = [0] * 9
                     currline = bin(int(lines[i + h], 16))[2:].zfill(8)
                     if len(currline) > 9:
                         currline = currline[:9]
-                    #print(currline)
+                    
                     for w in range(len(currline)):
-                        #print(w)
+                        
                         bitline[w] = int(currline[w])
-                    #print(bitline)
+                    
                     digit += bitline
 
                 for _ in range(14 - height):
                     digit += ([0] * 9)
 
-                #print(tup)
+                
                 all_data.append(digit)
                 digits.append(y)
 
@@ -54,22 +54,8 @@ def import_bdfs(directory):
     return all_data, digits
 
 
-def tanh(x):
-    return np.tanh(x)
-
-def derivative_tanh(x):
-    return 1 - tanh(x)**2
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
-
-def derivative_sigmoid(x):
-    return np.multiply( (1 / (1 + np.exp(-x))), (1 - (1 / (1 + np.exp(-x)))) )
-
-
 class BackPropNet:
     def __init__(self):
-        #self.training = training
         self.weights1 = np.random.uniform(-0.01, 0.01, (126, 126))
         self.weights2 = np.random.uniform(-0.01, 0.01, (126, 26))
 
@@ -77,7 +63,7 @@ class BackPropNet:
         return np.tanh(x)
 
     def derivative_tanh(self, x):
-        return 1 - tanh(x)**2
+        return 1 - np.square(np.tanh(x))
 
     def sigmoid(self, x):
         return 1 / (1 + np.exp(-x))
@@ -93,39 +79,29 @@ class BackPropNet:
                 input_layer = np.matrix([x])
 
                 """ Feed-forward """
-                layer1 = sigmoid(np.dot(input_layer, self.weights1))
-                output = sigmoid(np.dot(layer1, self.weights2))
+                layer1 = self.tanh(np.dot(input_layer, self.weights1))
+                output = self.sigmoid(np.dot(layer1, self.weights2))
 
 
                 """ Backpropagation """
-                d_weights2 = np.dot(layer1.T, np.multiply(2 * np.subtract(y, output), derivative_sigmoid(output)) )
+                output_deltas = np.multiply(2 * np.subtract(y, output), self.derivative_sigmoid(output))
+                d_weights2 = np.dot(layer1.T, output_deltas) # backpropagate to hidden layer
 
-                d_weights1 = np.dot(input_layer.T, np.multiply( np.dot( np.multiply( 2 * np.subtract(y, output), derivative_sigmoid(output) ), self.weights2.T), derivative_sigmoid(layer1) ) )
+                input_deltas = np.multiply( np.dot( output_deltas, self.weights2.T), self.derivative_tanh(layer1) )
+                d_weights1 = np.dot(input_layer.T, input_deltas)
 
-                self.weights1 += d_weights1
-                self.weights2 += d_weights2
-
-                #m = max(output.T)
-                #maxiter = [i for i, j in enumerate(output.T) if j == m]
-
-                #ym = max(y)
-                #maxitery = [i for i, j in enumerate(y) if j == 1]
-                #print("Actual pos:", maxitery)
-                #print("Output pos:", maxiter)
-                #if (maxitery == maxiter):
-                 #   print("Correct!")
-                #else:
-                 #   print("Nope")
+                self.weights1 +=  d_weights1
+                self.weights2 +=  d_weights2
 
 
     def predict(self, example, correct):
         input_layer = np.matrix( [example] )
 
-        layer1 = sigmoid(np.dot(input_layer, self.weights1))
-        output = sigmoid(np.dot(layer1, self.weights2))
+        layer1 = self.sigmoid(np.dot(input_layer, self.weights1))
+        output = self.sigmoid(np.dot(layer1, self.weights2))
 
-        m = max(output.T)
-        maxiter = [i for i, j in enumerate(output.T) if j == m]
+        max_out = max(output.T)
+        maxiter = [i for i, j in enumerate(output.T) if j == max_out]
         letter_guessed = chr(65 + maxiter[0])
 
         ym = max(correct)
@@ -135,6 +111,27 @@ class BackPropNet:
         print("Predicted = ", letter_guessed)
         print("Actual = " , letter_actual)
 
+
+    def print_weights(self):
+        with open("backpropweights.txt", "a") as f:
+            for i in range(len(self.weights1)):
+                for j in range(len(self.weights1[i])):
+                    f.write(str(1) + "\n")
+
+            for i in range(len(self.weights2)):
+                for j in range(len(self.weights2[i])):
+                    f.write(str(2) + "\n")
+            
+
+    def load_weights(self, filename):
+        with open(filename, "r") as f:
+            for i in range(len(self.weights1)):
+                for j in range(len(self.weights1[i])):
+                    self.weights1[i][j] = float(f.readline().strip('\r\n'))
+
+            for i in range(len(self.weights2)):
+                for j in range(len(self.weights2[i])):
+                    self.weights2[i][j] = float(f.readline().strip('\r\n'))
         
 
 
@@ -142,5 +139,5 @@ all_data, digits = import_bdfs("/bdf")
 print("Done with file upload")
 
 net = BackPropNet()
-net.train(all_data, digits, 10)
-net.predict(all_data[100], digits[100])
+net.train(all_data, digits, 50)
+net.predict(all_data[81], digits[81])
